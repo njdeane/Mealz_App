@@ -5,9 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nicdeane.mealzapp.ui.theme.MealzAppTheme
+import com.nicdeane.model.response.MealResponse
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +27,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MealsCategoriesScreen() {
     val viewModel: MealsCategoriesViewModel = viewModel()
-    Text(text = "Hello Compose!")
+    val rememberedMeals: MutableState<List<MealResponse>> =
+        remember { mutableStateOf(emptyList<MealResponse>()) }
+    viewModel.getMeals { response ->
+        val mealsFromTheApi = response?.categories
+        rememberedMeals.value = mealsFromTheApi.orEmpty()
+    }
+    Text(text = rememberedMeals.value.toString())
 }
 
 @Preview(showBackground = true)
